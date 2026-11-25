@@ -1,0 +1,223 @@
+#!/usr/bin/env python3
+"""KLAUDIA BOT · sung shots with the real lip sync: Seedance on OpenRouter hears Klaudia's voice and sings it.
+
+The same method as the Claudia bot (anabology): reference mode — the shot's still as @Image1, Klaudia's face as
+@Image2, the song's VOCAL STEM cut to the shot's window as @Audio1 (an HTTPS link: OpenRouter refuses inline audio).
+Never a first frame: with a first frame OpenRouter ignores the audio.
+
+  1. window   cut the vocal window for one shot (free)
+     python3 klaudia_sing.py window --vocals song/vocals.mp3 --lines song/lines.json --from 13.7 --to 17.4 --out sing/S04.wav
+       (--lines: the JSON klaudia_edit.py --dump-lines writes; the window opens 0.7 s before the first word and is
+        cut to whole seconds, 4–15; everything outside [from, to] is silenced)
+  2. host     publish the folder of windows on a temporary https link (free; Cloudflare quick tunnel)
+     python3 klaudia_sing.py host --dir sing          → prints {"url": "https://….trycloudflare.com"} and keeps running
+  3. price    what one take costs (free)
+     python3 klaudia_sing.py price --seconds 5 --model mini --res 720p
+  4. sing     make the take (PAID: needs --yes, and the person's yes in the chat first)
+     python3 klaudia_sing.py sing --still photos/04.png --face refs/klaudia-face.jpg --audio-url https://…/S04.wav \
+        --words "X wants to pay the streamers" --seconds 5 --model mini --res 720p --format vertical --out clips/S04-sung.mp4 --yes
+     It prints {"ok", "out", "cost", "lead": 0.7}. In the edit, give that clip as clips/S04-sung.mp4@0.7 so the take's
+     first word lands on the song's word.
+Key: OPENROUTER_API_KEY in the environment (the bot's masked secret card). Never printed, never written to a file.
+"""
+import argparse
+import base64
+import io
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.request
+from pathlib import Path
+
+API = "https://openrouter.ai/api/v1/videos"
+LEAD = 0.7
+MODELS = {  # OpenRouter ids and their price per video token (checked 2026-11-25 on /api/v1/videos/models)
+    "full": ("bytedance/seedance-2.5", 0.0000107),
+    "flash": ("bytedance/seedance-2.5-flash", 0.000007),
+    "mini": ("bytedance/seedance-2.0-mini", 0.0000035),
+}
+SIZES = {("720p", "vertical"): (720, 1280), ("720p", "horizontal"): (1280, 720),
+         ("480p", "vertical"): (480, 854), ("480p", "horizontal"): (854, 480)}
+
+
+def ffmpeg():
+    exe = shutil.which("ffmpeg")
+    if exe:
+        return exe
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except ImportError:
+        sys.exit("No ffmpeg: run `pip install imageio-ffmpeg`.")
+
+
+def price(seconds, model, res, fmt="vertical"):
+    w, h = SIZES[(res, fmt)]
+    tokens = w * h * 24 * seconds / 1024
+    return round(tokens * MODELS[model][1], 3)
+
+
+# ---------- 1. the window ----------
+def cmd_window(a):
+    t0, t1 = float(a.from_), float(a.to)
+    start = max(t0 - LEAD, 0.0)
+    secs = int(min(15, max(4, -(-(t1 - start + 0.3) // 1))))
+    # silence everything outside [t0, t1] (20 ms fades), relative to the window start
+    s0, s1 = t0 - start, t1 - start
+    vol = (f"volume=enable='lt(t,{s0 - 0.02:.3f})+gt(t,{s1 + 0.02:.3f})':volume=0,"
+           f"afade=t=in:st={max(s0 - 0.02, 0):.3f}:d=0.02,afade=t=out:st={s1:.3f}:d=0.02")
+    out = Path(a.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    r = subprocess.run([ffmpeg(), "-nostdin", "-loglevel", "error", "-y", "-ss", f"{start:.3f}", "-t", str(secs),
+                        "-i", a.vocals, "-af", vol, "-ac", "1", "-ar", "44100", str(out)], capture_output=True, text=True)
+    if r.returncode:
+        sys.exit("ffmpeg failed: " + r.stderr[-500:])
+    print(json.dumps({"ok": True, "out": str(out), "song_start": round(start, 3), "seconds": secs, "lead": round(t0 - start, 3)}))
+
+
+# ---------- 2. the temporary https link ----------
+def cloudflared():
+    exe = shutil.which("cloudflared") or str(Path.home() / ".local/bin/cloudflared")
+    if Path(exe).is_file():
+        return exe
+    sys.exit("No cloudflared: run the klaudia-setup step that installs it.")
+
+
+def cmd_host(a):
+    d = Path(a.dir).resolve()
+    port = a.port
+    web = subprocess.Popen([sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1", "--directory", str(d)],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    tun = subprocess.Popen([cloudflared(), "tunnel", "--no-autoupdate", "--url", f"http://127.0.0.1:{port}"],
+                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    url = None
+    t_end = time.time() + 60
+    while time.time() < t_end and url is None:
+        line = tun.stdout.readline()
+        if "trycloudflare.com" in line:
+            url = "https://" + line.split("https://", 1)[1].split()[0].strip("|").strip()
+    if not url:
+        web.kill()
+        tun.kill()
+        sys.exit("The tunnel did not start in 60 s.")
+    print(json.dumps({"ok": True, "url": url, "dir": str(d), "note": "keep this running until every take is done"}), flush=True)
+    try:
+        tun.wait()
+    finally:
+        web.kill()
+
+
+# ---------- 4. the take ----------
+def data_url(path):
+    from PIL import Image
+    im = Image.open(path).convert("RGB")
+    im.thumbnail((1920, 1920))
+    b = io.BytesIO()
+    im.save(b, "JPEG", quality=90)
+    return "data:image/jpeg;base64," + base64.b64encode(b.getvalue()).decode()
+
+
+def prompt_for(words, framing):
+    return (f'@Image1 is the shot; @Image2 is Klaudia\'s face. Klaudia, the woman in @Image1, sings @Audio1, copying it '
+            f'word for word: "{words}". The soundtrack is @Audio1 exactly: no music, no other voices. '
+            f'{framing} Eyes wide open, a smile in her eyes, lips closed until her voice begins. '
+            'One continuous shot, no cuts, no head turns. Only she sings. No text, letters or logos.')
+
+
+def call(method, url, key, body=None, raw=False):
+    req = urllib.request.Request(url, method=method, data=json.dumps(body).encode() if body else None,
+                                 headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=300) as r:
+        d = r.read()
+        return d if raw else json.loads(d)
+
+
+def cmd_price(a):
+    print(json.dumps({"model": MODELS[a.model][0], "seconds": a.seconds, "res": a.res,
+                      "usd": price(a.seconds, a.model, a.res, a.format)}))
+
+
+def cmd_sing(a):
+    model_id = MODELS[a.model][0]
+    est = price(a.seconds, a.model, a.res, a.format)
+    body = {"model": model_id, "prompt": prompt_for(a.words, a.framing), "duration": int(a.seconds),
+            "resolution": a.res, "aspect_ratio": "9:16" if a.format == "vertical" else "16:9", "generate_audio": True,
+            "input_references": [{"type": "image_url", "image_url": {"url": data_url(a.still)}},
+                                 {"type": "image_url", "image_url": {"url": data_url(a.face)}},
+                                 {"type": "audio_url", "audio_url": {"url": a.audio_url}}]}
+    if not a.audio_url.startswith("https://"):
+        sys.exit("--audio-url must be an https link (klaudia_sing.py host).")
+    if not a.yes:
+        print(json.dumps({"dry_run": True, "model": model_id, "estimate_usd": est, "prompt": body["prompt"],
+                          "refs": ["@Image1 still", "@Image2 face", "@Audio1 " + a.audio_url]}))
+        return
+    key = os.environ.get("OPENROUTER_API_KEY")
+    if not key:
+        sys.exit("OPENROUTER_API_KEY is not set: connect OpenRouter first (skill klaudia-setup).")
+    try:
+        job = call("POST", API, key, body)
+    except urllib.error.HTTPError as e:
+        sys.exit(json.dumps({"ok": False, "refused": e.code, "why": e.read().decode(errors="replace")[:400],
+                             "note": "not resubmitted: a refused request is final for this still"}))
+    out = Path(a.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.with_suffix(".job.json").write_text(json.dumps({"job": job, "model": model_id, "words": a.words}))
+    poll = job.get("polling_url") or f"/api/v1/videos/{job['id']}"
+    poll = "https://openrouter.ai" + poll if poll.startswith("/") else poll
+    st = {}
+    for _ in range(120):  # up to 20 minutes; never resubmit on a timeout (it would charge twice)
+        time.sleep(10)
+        try:
+            st = call("GET", poll, key)
+        except (urllib.error.URLError, OSError, TimeoutError):
+            continue
+        if st.get("status") in ("completed", "failed", "cancelled", "expired"):
+            break
+    if st.get("status") != "completed":
+        sys.exit(json.dumps({"ok": False, "status": st.get("status"), "error": st.get("error"), "job": job.get("id"),
+                             "note": "check the job later; do not submit it again"}))
+    try:
+        video = call("GET", f"https://openrouter.ai/api/v1/videos/{job['id']}/content", key, raw=True)
+    except urllib.error.HTTPError:
+        video = urllib.request.urlopen(st["unsigned_urls"][0], timeout=300).read()
+    out.write_bytes(video)
+    cost = float((st.get("usage") or {}).get("cost") or 0)
+    print(json.dumps({"ok": True, "out": str(out), "cost": cost, "estimate": est, "lead": LEAD,
+                      "edit_as": f"{out}@{LEAD}"}))
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    w = sub.add_parser("window")
+    w.add_argument("--vocals", required=True)
+    w.add_argument("--from", dest="from_", required=True, type=float)
+    w.add_argument("--to", required=True, type=float)
+    w.add_argument("--out", required=True)
+    h = sub.add_parser("host")
+    h.add_argument("--dir", required=True)
+    h.add_argument("--port", type=int, default=8765)
+    for name in ("price", "sing"):
+        s = sub.add_parser(name)
+        s.add_argument("--seconds", type=int, default=5)
+        s.add_argument("--model", choices=list(MODELS), default="mini")
+        s.add_argument("--res", choices=["480p", "720p"], default="720p")
+        s.add_argument("--format", choices=["vertical", "horizontal"], default="vertical")
+        if name == "sing":
+            s.add_argument("--still", required=True)
+            s.add_argument("--face", required=True)
+            s.add_argument("--audio-url", required=True)
+            s.add_argument("--words", required=True)
+            s.add_argument("--framing", default="Medium close-up, static camera, her whole mouth visible.")
+            s.add_argument("--out", required=True)
+            s.add_argument("--yes", action="store_true", help="really spend (only after the person's yes)")
+    a = ap.parse_args()
+    {"window": cmd_window, "host": cmd_host, "price": cmd_price, "sing": cmd_sing}[a.cmd](a)
+
+
+if __name__ == "__main__":
+    main()

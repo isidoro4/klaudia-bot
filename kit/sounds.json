@@ -1,0 +1,29 @@
+{
+  "_how": "The song menu. The person picks a sound by its label; you never show the style text. For 'berlin', pick (or let them pick) a world that fits the news and fill WORLD and PERCUSSION. Send style and exclude to Suno exactly as built.",
+  "exclude": "ballad, slow tempo, long intro, instrumental intro, sung verses, male lead vocal, rap, whisper, mumbling, trance, dubstep, lo-fi, musical theatre, sad",
+  "sounds": [
+    {
+      "id": "berlin",
+      "label": "🔊 Berlin techno + a world from the past that fits the news (Klaudia's signature sound)",
+      "style": "Berlin warehouse techno meets WORLD; short and catchy, fast and relentless 136 BPM four-on-the-floor; starts immediately with the voice, no long intro: a dry deadpan spoken line over almost no music, then a hard beat drop; PERCUSSION as percussion, rolling bass; cold deadpan spoken female verses, rapid-fire, gang-shouted answers; punchy shouted chorus, call-and-response; the music cuts dead for one dry spoken last line by a real human woman; clear, intelligible vocals, loud and upfront",
+      "worlds": [
+        {"WORLD": "a 1970s TV telethon", "PERCUSSION": "cash-register dings, a clicking tally counter, studio applause and ringing telethon phones", "fits": "money, fundraising, audiences, live streams"},
+        {"WORLD": "1980s 8-bit arcade chiptune", "PERCUSSION": "square-wave arcade leads, game-over jingles, joystick clicks and laser zaps", "fits": "games, apps, tech, jobs and AI"},
+        {"WORLD": "a 1960s film-editing room", "PERCUSSION": "scissor snips, splicing-tape rips, clattering film reels and projector clicks", "fits": "video, social media, creators, cinema"},
+        {"WORLD": "a 1950s stock-exchange trading floor", "PERCUSSION": "ticker-tape clatter, an opening bell, shouting traders and rubber stamps", "fits": "business, companies, markets (never a coin or a token)"},
+        {"WORLD": "a 1960s space-race mission control", "PERCUSSION": "countdown beeps, radio static, rocket rumble and switch clicks", "fits": "space, science, launches, records"},
+        {"WORLD": "a 1940s newsroom", "PERCUSSION": "typewriter bells, teleprinter chatter, flash-bulb pops and a ringing desk phone", "fits": "anything else"}
+      ]
+    },
+    {
+      "id": "jingle50s",
+      "label": "📻 1950s radio jingle, doo-wop girl group (happy, historic news)",
+      "style": "1950s radio jingle, doo-wop, female duet, girl group close harmony vocals, female announcer, swing, upright bass, vibraphone, theremin, space age, vintage AM radio, triumphant; short, starts immediately with the announcer's voice, no long intro; clear, intelligible vocals, loud and upfront"
+    },
+    {
+      "id": "surprise",
+      "label": "✨ Surprise me",
+      "style": "choose 'berlin' with the world that fits the news best, and say which"
+    }
+  ]
+}

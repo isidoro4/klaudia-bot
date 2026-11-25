@@ -1,0 +1,10 @@
+{
+  "_how": "The outfit menu. Paste the 'text' of the chosen look after Klaudia's identity text, in every still of her.",
+  "looks": [
+    {"id": "news", "label": "🎙 Her news look (default)", "text": "She wears exactly her outfit from the reference images: white blouse with puffed sleeves, black corset, short silver sequin skirt, white gloves, white high boots."},
+    {"id": "latex", "label": "🤍 White latex catsuit", "text": "She wears a glossy white latex catsuit with thin orange piping and a high collar, white gloves and white boots; no dress, no black clothes."},
+    {"id": "gala", "label": "🖤 Dark gala dress", "text": "She wears an elegant floor-length dark evening gown, simple and fitted, with small orange earrings."},
+    {"id": "green", "label": "💚 Green satin dress", "text": "She wears a fitted emerald-green satin cocktail dress with thin straps and small orange earrings."},
+    {"id": "fit", "label": "🎲 Whatever fits the news", "text": "Choose clothes that fit the story's world, high fashion and unmistakably her style (white, black, silver or orange); say which."}
+  ]
+}
