@@ -16,6 +16,7 @@ One shot per lyric line, cut where the line starts; the clips are used in the or
 fewer clips than lines. A still gets a slow zoom. Lyrics on screen in big letters (choir in orange), the title for
 the first seconds, and an end card with the tag and «fan-made with KLAUDIA BOT · made with AI».
 A clip given as path@SECONDS starts there (a sung take: @0.7); "+" in the list keeps playing the previous clip.
+With --board board.json (klaudia_board.py) every cut, clip or photo, the song, title and tag come from the board.
 Options: --end SECONDS (cut the song there), --test 0-10 (only that stretch, fast), --keep (keep the work folder).
 """
 import argparse
@@ -213,6 +214,10 @@ def split_chunks(line, maxwords=4):
 def make_shot(src, seconds, out):
     """src may end in @SECONDS: start reading the clip there (a sung take opens LEAD seconds before its first word)."""
     skip = 0.067  # skip the first 2 frames: they are the sharper input still
+    speed = 1.0
+    if "^" in str(src):                       # path^1.5 = play the clip 1.5× faster (dances: models dance too slowly)
+        src, sp = str(src).rsplit("^", 1)
+        speed = float(sp)
     if "@" in str(src) and str(src).rsplit("@", 1)[1].replace(".", "", 1).isdigit():
         src, at = str(src).rsplit("@", 1)
         skip = max(float(at), skip)
@@ -224,9 +229,9 @@ def make_shot(src, seconds, out):
         run(["-loop", "1", "-i", str(src), "-vf", f"{fill},{z}", "-t", f"{seconds:.3f}",
              "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", "-an", str(out)])
     else:
-        have = duration(src) - skip
+        have = (duration(src) - skip) / speed
         pad = max(seconds - have + 0.1, 0)
-        vf = f"{fill},fps={FPS}" + (f",tpad=stop_mode=clone:stop_duration={pad:.3f}" if pad > 0 else "")
+        vf = (f"setpts=PTS/{speed}," if speed != 1.0 else "") + f"{fill},fps={FPS}" + (f",tpad=stop_mode=clone:stop_duration={pad:.3f}" if pad > 0 else "")
         run(["-ss", f"{skip:.3f}", "-i", str(src), "-vf", vf, "-t", f"{seconds:.3f}",
              "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", "-an", str(out)])
 
@@ -234,11 +239,12 @@ def make_shot(src, seconds, out):
 def main():
     global FF, W, H, S
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--song", required=True)
+    ap.add_argument("--song")
+    ap.add_argument("--board", help="board.json (klaudia_board.py): cuts, clips or photos, song, title and tag all come from it")
     ap.add_argument("--words")
     ap.add_argument("--lyrics")
     ap.add_argument("--lines")
-    ap.add_argument("--clips", nargs="+", required=True)
+    ap.add_argument("--clips", nargs="+")
     ap.add_argument("--title", default="KLAUDIA'S NEWS")
     ap.add_argument("--tag", default="INVITE YOURSELF.")
     ap.add_argument("--out", default="klaudia-news.mp4")
@@ -253,6 +259,27 @@ def main():
     ap.add_argument("--every", type=float, help="no lyric timing: cut every N seconds (try the beat: 4 bars)")
     ap.add_argument("--no-lyrics", action="store_true", help="no lyrics on screen (title and end card only)")
     a = ap.parse_args()
+    board = None
+    if a.board:
+        board = json.loads(Path(a.board).read_text())
+        base = Path(a.board).resolve().parent
+        rel = lambda x: str(base / x) if x and not str(x).startswith("/") else x
+        a.song = rel(board["song"])
+        a.format = board.get("format", a.format)
+        a.title = board.get("title", a.title)
+        a.tag = board.get("tag", a.tag)
+        if board.get("lines") and not (a.lines or a.words):
+            a.lines = rel(board["lines"])
+        a.clips = []
+        for s in board["shots"]:
+            src = s.get("clip") or s.get("still")
+            if not src:
+                sys.exit(f"shot {s['n']} has no photo and no clip yet")
+            src, at = (src.rsplit("@", 1) + [""])[:2] if "@" in src else (src, "")
+            sp = f"^{s['speed']}" if s.get("speed") and s.get("clip") else ""
+            a.clips.append(rel(src) + (f"@{at}" if at else "") + sp)
+    if not a.song or not a.clips:
+        sys.exit("Give --board, or --song and --clips.")
     if a.format == "horizontal":
         W, H, S = 1920, 1080, 0.85
     FF = ffmpeg_bin()
@@ -266,6 +293,8 @@ def main():
                                  lyric_lines(Path(a.lyrics).read_text()))
     elif a.every:
         lines = []
+    elif board:
+        lines = [{"text": s["line"], "choir": False, "t0": s["t0"], "t1": s["t1"]} for s in board["shots"] if s.get("line")]
     else:
         sys.exit("Give --lines, or --words with --lyrics, or --every SECONDS (a song with no timing).")
     if not lines and not a.every:
@@ -291,6 +320,11 @@ def main():
                     | ({round(k * a.every, 3) for k in range(1, int(end / a.every) + 1)
                         if k * a.every < end - card - 0.4} if a.every and not lines else set()))
     cuts = starts + [end - card]
+    if board:                                     # the board decides every cut
+        end = min(song_len, board["shots"][-1]["t1"] + card)
+        cuts = [s["t0"] for s in board["shots"]] + [board["shots"][-1]["t1"]]
+        if a.test:
+            t1 = min(t1, end)
     work = Path(tempfile.mkdtemp(prefix="klaudia-edit-"))
     try:
         # which clip each shot shows; "+" = keep playing the previous clip (a sung take over two lines)

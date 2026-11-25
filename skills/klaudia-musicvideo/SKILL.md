@@ -17,6 +17,7 @@ Folder: /workspace/klaudia-videos/<YYYY-MM-DD>-<name>/.
    - We write it: the lyric (the template), shown; the yes for each Suno round (about 10 credits, 2 takes; ask "about 2:30" as duration); skill klaudia-song; pick by ear.
    - Their own lyric: same, with their words (check the rules).
    - Their own file: save it as song/song.mp3. No timing: the edit cuts on a steady rhythm (`--every`, 4 bars; at 120 BPM that is 8 s).
+5–8. **The board, stills, clips and edit: skill klaudia-board** (format horizontal, --max 2.5). As reference:
 5. **The board — choice 5**: 14–24 shots (the template). Show it as a numbered list, one line per shot. Before any picture, say the cost in their plan's terms: "about N stills and N clips of 6–8 s on your Grok Bot usage; a long video can use a lot of your weekly pool". Buttons: **Go** / Change shots.
 6. **Stills**: skill klaudia-shots, 16:9 (horizontal) instead of 9:16. Show them in batches of 6. Buttons: Use / Redo some (at most 2 rounds).
 7. **Clips**: skill klaudia-shots, 6–8 s each, 16:9, from each still. In a shot where she sings, the words in quotes and kit/klaudia.json "singing"; elsewhere she moves.

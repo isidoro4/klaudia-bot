@@ -27,6 +27,8 @@ Buttons: Hook 1 / Hook 2 / Hook 3 / Other ideas.
 Write the lyric with kit/lyrics-template.md and show it. Buttons: **Make the song (2 takes, about 10 Suno credits)** / Change something.
 Only with that yes: skill klaudia-song. Then send both takes to listen. Buttons: Take 1 / Take 2 / Another round (asks again for the credits).
 
+## 5–7. The board, the photos, the clips and the edit: skill klaudia-board (it replaces the steps below; they stay as reference)
+
 ## 5. The photos — choice 5 (skill klaudia-shots)
 Plan 6–8 shots, one per line or two of the lyric: the hook picture first, the chorus on the beat, the punchline last. Mix close, medium and wide; the robots and the world as cutaways.
 Make the stills (skill klaudia-shots) and show them numbered. Buttons: Use all / Redo some (they say which numbers; at most 2 rounds).

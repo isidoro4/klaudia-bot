@@ -14,6 +14,7 @@ Folder: /workspace/klaudia-news/<YYYY-MM-DD>-unpaid-<brand>/.
 2. **The angle — choice 1**: three ideas, one line each: how Klaudia "uses" it, absurd but harmless (she wins). Buttons.
 3. **Sound and Klaudia — choices 2 and 3**: as in klaudia-news (the sound, then Pick your Klaudia from kit/roles.json) (the sound menu; for "berlin", a world that fits the product).
 4. **Lyric and song — choice 4**: kit/sponsorship-template.md; show it; the yes for the Suno round (about 10 credits); skill klaudia-song; pick a take.
+5–7. **Board, photos, clips, edit: skill klaudia-board.** Then, as reference:
 5. **Photos — choice 5**: 6–8 shots: her with the product as a GENERIC object (no logo, no label text, no app screen), one big hero shot of it, the robots reacting, the punchline last. Skill klaudia-shots.
 6. **Clips**: skill klaudia-shots.
 7. **Edit**: skill klaudia-edit, vertical, `--title "UNPAID: <BRAND>"`; then add the line "unpaid · not affiliated with <BRAND>" to the post you write for them. You never post it.

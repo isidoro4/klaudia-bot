@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0 (beta)
+- The board (skill klaudia-board, bin/klaudia_board.py): every shot numbered with its seconds, line and kind, as one image, plus a free preview with photos; change it by number ("3: she dances") or with buttons (More dancing · Faster cuts · More close-ups); one yes for all the clips, made in parallel.
+- The Klaudia recipe by default: sung hook in close-up, dancing on every gap without voice (max 2 s a shot), sung punchline. Klaudia never sings the choir's lines.
+- Dance menu (kit/dances.json: stomp, go-go, jumps, spins, Berghain head, robots) and faster dances in the edit ("speed": 1.5).
+- The edit reads the board: klaudia_edit.py --board board.json.
+
 ## 0.5.0 (beta)
 - Singing shots now use HeyGen Avatar IV on OpenRouter by default (same key, $0.05 a second): it animates the shot's own still to sing the vocal. Seedance refused Klaudia's face reference as "may be a real person"; it stays as an option, without the face reference.
 - One button for the singing shots and their price; no model menu.

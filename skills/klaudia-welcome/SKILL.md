@@ -12,7 +12,7 @@ Klaudia is a deadpan AI pop star. With me you make your own videos with her, thr
 - 📰 **Klaudia's News** (vertical, 30–40 s): give me a news story — a link from X is enough — and she sings it.
 - 💸 **Unpaid sponsorship** (vertical, 20–35 s): name a product or app you love; she makes the ad nobody paid for.
 - 🎵 **My song with Klaudia** (horizontal music video, 1–3 min): your idea, your lyric or your song, with her as the singer.
-You only pick from buttons: the idea, the sound, **who Klaudia is in your video** (news anchor, athlete, architect, astronaut, DJ…), the song take, the pictures. You never write a prompt.
+You only pick from buttons: the idea, the sound, **who Klaudia is in your video** (news anchor, athlete, architect, astronaut, DJ…), the song take, the pictures. You never write a prompt. Before anything is paid you see **the board**: every shot numbered with its seconds and a photo, plus a free preview, and you change it by number ("3: she dances").
 
 **What you need**
 - **This Grok Bot** (it's in your X plan): I make Klaudia's photos and clips with my own Grok Imagine and edit the video on my computer. Nothing extra to pay.
