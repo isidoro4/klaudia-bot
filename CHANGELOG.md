@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0 (beta)
+- Singing shots now use HeyGen Avatar IV on OpenRouter by default (same key, $0.05 a second): it animates the shot's own still to sing the vocal. Seedance refused Klaudia's face reference as "may be a real person"; it stays as an option, without the face reference.
+- One button for the singing shots and their price; no model menu.
+
 ## 0.4.0 (beta)
 - Lip sync fixed for Grok Bot's computer: the tunnel now runs over http2, and where it is still blocked each vocal snippet goes to a temporary host that deletes it within an hour (the bot says so first).
 - Singing shots default to the cheap Seedance mini, with the price per shot shown first.

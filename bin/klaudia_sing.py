@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
-"""KLAUDIA BOT · sung shots with the real lip sync: Seedance on OpenRouter hears Klaudia's voice and sings it.
+"""KLAUDIA BOT · sung shots with real lip sync, on the person's OpenRouter key.
 
-The same method as the Claudia bot (anabology): reference mode — the shot's still as @Image1, Klaudia's face as
-@Image2, the song's VOCAL STEM cut to the shot's window as @Audio1 (an HTTPS link: OpenRouter refuses inline audio).
-Never a first frame: with a first frame OpenRouter ignores the audio.
+DEFAULT --model heygen (HeyGen Avatar IV, $0.05 per second): animates the shot's own still so she sings the vocal
+window. It accepted Klaudia's photoreal face on 25 Nov 2026, where Seedance refused her face reference as "may be a
+real person". Seedance (mini / flash / full) stays as an option: reference mode, the still as @Image1, NO face
+reference by default (that close-up was what its filter refused), the vocal as @Audio1. Never a first frame.
+The vocal goes as an HTTPS link (OpenRouter refuses inline audio): see host.
 
   1. window   cut the vocal window for one shot (free)
-     python3 klaudia_sing.py window --vocals song/vocals.mp3 --lines song/lines.json --from 13.7 --to 17.4 --out sing/S04.wav
-       (--lines: the JSON klaudia_edit.py --dump-lines writes; the window opens 0.7 s before the first word and is
-        cut to whole seconds, 4–15; everything outside [from, to] is silenced)
+     python3 klaudia_sing.py window --vocals song/vocals.mp3 --from 13.7 --to 17.4 --out sing/S04.wav
+       (the window opens 0.7 s before the first word, whole seconds 4–15, silence outside [from, to])
   2. host     give each window an https link (free): a Cloudflare quick tunnel over http2, or, where the tunnel is
      blocked, a temporary upload that deletes itself within an hour (litterbox, tmpfiles.org)
      python3 klaudia_sing.py host --dir sing [--mode auto|tunnel|temp]   → prints {"mode", "urls": {"01.wav": "https://…"}}
-  3. price    what one take costs (free)
-     python3 klaudia_sing.py price --seconds 5 --model mini --res 720p
-  4. sing     make the take (PAID: needs --yes, and the person's yes in the chat first)
-     python3 klaudia_sing.py sing --still photos/04.png --face refs/klaudia-face.jpg --audio-url <the url host printed for that file> \
-        --words "X wants to pay the streamers" --seconds 5 --model mini --res 720p --format vertical --out clips/S04-sung.mp4 --yes
-     It prints {"ok", "out", "cost", "lead": 0.7}. In the edit, give that clip as clips/S04-sung.mp4@0.7 so the take's
-     first word lands on the song's word.
+  3. price    python3 klaudia_sing.py price --seconds 5            (free; heygen by default)
+  4. sing     PAID: needs --yes, and the person's yes in the chat first
+     python3 klaudia_sing.py sing --still photos/04.png --audio-url <url printed for that file> \
+        --words "X wants to pay the streamers" --seconds 5 --format vertical --out clips/S04-sung.mp4 --yes
+     It prints {"ok", "out", "cost", "lead": 0.7}. In the edit, give the clip as clips/S04-sung.mp4@0.7.
 Key: OPENROUTER_API_KEY in the environment (the bot's masked secret card). Never printed, never written to a file.
 """
 import argparse
@@ -37,6 +36,7 @@ from pathlib import Path
 API = "https://openrouter.ai/api/v1/videos"
 LEAD = 0.7
 MODELS = {  # OpenRouter ids and their price per video token (checked 2026-11-25 on /api/v1/videos/models)
+    "heygen": ("heygen/avatar-iv", None),     # $0.05 per second: animates the still to sing the vocal (DEFAULT)
     "full": ("bytedance/seedance-2.5", 0.0000107),
     "flash": ("bytedance/seedance-2.5-flash", 0.000007),
     "mini": ("bytedance/seedance-2.0-mini", 0.0000035),
@@ -57,6 +57,8 @@ def ffmpeg():
 
 
 def price(seconds, model, res, fmt="vertical"):
+    if model == "heygen":
+        return round(0.05 * seconds, 3)
     w, h = SIZES[(res, fmt)]
     tokens = w * h * 24 * seconds / 1024
     return round(tokens * MODELS[model][1], 3)
@@ -174,8 +176,9 @@ def data_url(path):
     return "data:image/jpeg;base64," + base64.b64encode(b.getvalue()).decode()
 
 
-def prompt_for(words, framing):
-    return (f'@Image1 is the shot; @Image2 is Klaudia\'s face. Klaudia, the woman in @Image1, sings @Audio1, copying it '
+def prompt_for(words, framing, face=False):
+    who = "@Image1 is the shot; @Image2 is Klaudia's face. " if face else "@Image1 is the shot. "
+    return (who + f'Klaudia, the woman in @Image1, sings @Audio1, copying it '
             f'word for word: "{words}". The soundtrack is @Audio1 exactly: no music, no other voices. '
             f'{framing} Eyes wide open, a smile in her eyes, lips closed until her voice begins. '
             'One continuous shot, no cuts, no head turns. Only she sings. No text, letters or logos.')
@@ -197,16 +200,28 @@ def cmd_price(a):
 def cmd_sing(a):
     model_id = MODELS[a.model][0]
     est = price(a.seconds, a.model, a.res, a.format)
-    body = {"model": model_id, "prompt": prompt_for(a.words, a.framing), "duration": int(a.seconds),
-            "resolution": a.res, "aspect_ratio": "9:16" if a.format == "vertical" else "16:9", "generate_audio": True,
-            "input_references": [{"type": "image_url", "image_url": {"url": data_url(a.still)}},
-                                 {"type": "image_url", "image_url": {"url": data_url(a.face)}},
-                                 {"type": "audio_url", "audio_url": {"url": a.audio_url}}]}
+    if a.model == "heygen":
+        # HeyGen Avatar IV: the shot's still + the vocal. No face reference (photoreal face references trip the
+        # Seedance face filter; HeyGen animates the still itself, so Klaudia is whoever is in that still).
+        motion = (f'She sings these words with her whole face: "{a.words}". Eyes wide open, a slight head bob on the '
+                  'beat, deadpan and confident.')
+        body = {"model": model_id, "prompt": motion, "motion_prompt": motion, "resolution": a.res,
+                "aspect_ratio": "9:16" if a.format == "vertical" else "16:9",
+                "input_references": [{"type": "image_url", "image_url": {"url": data_url(a.still)}},
+                                     {"type": "audio_url", "audio_url": {"url": a.audio_url}}]}
+    else:
+        refs = [{"type": "image_url", "image_url": {"url": data_url(a.still)}}]
+        if a.face:   # optional: a photoreal close-up here is the usual cause of "may be a real person" refusals
+            refs.append({"type": "image_url", "image_url": {"url": data_url(a.face)}})
+        refs.append({"type": "audio_url", "audio_url": {"url": a.audio_url}})
+        body = {"model": model_id, "prompt": prompt_for(a.words, a.framing, bool(a.face)), "duration": int(a.seconds),
+                "resolution": a.res, "aspect_ratio": "9:16" if a.format == "vertical" else "16:9", "generate_audio": True,
+                "input_references": refs}
     if not a.audio_url.startswith("https://"):
         sys.exit("--audio-url must be an https link (klaudia_sing.py host).")
     if not a.yes:
         print(json.dumps({"dry_run": True, "model": model_id, "estimate_usd": est, "prompt": body["prompt"],
-                          "refs": ["@Image1 still", "@Image2 face", "@Audio1 " + a.audio_url]}))
+                          "refs": [r.get("type") for r in body["input_references"]]}))
         return
     key = os.environ.get("OPENROUTER_API_KEY")
     if not key:
@@ -258,12 +273,12 @@ def main():
     for name in ("price", "sing"):
         s = sub.add_parser(name)
         s.add_argument("--seconds", type=int, default=5)
-        s.add_argument("--model", choices=list(MODELS), default="mini")
+        s.add_argument("--model", choices=list(MODELS), default="heygen")
         s.add_argument("--res", choices=["480p", "720p"], default="720p")
         s.add_argument("--format", choices=["vertical", "horizontal"], default="vertical")
         if name == "sing":
             s.add_argument("--still", required=True)
-            s.add_argument("--face", required=True)
+            s.add_argument("--face", help="Seedance only, optional (usually leave it out)")
             s.add_argument("--audio-url", required=True)
             s.add_argument("--words", required=True)
             s.add_argument("--framing", default="Medium close-up, static camera, her whole mouth visible.")
