@@ -21,7 +21,7 @@ Buttons: Hook 1 / Hook 2 / Hook 3 / Other ideas.
 
 ## 3. Sound and look — choices 2 and 3
 - Sound: buttons from kit/sounds.json (labels only). For "berlin", name the world you would use and why, in one line; they can switch.
-- Her look: buttons from kit/looks.json (labels only).
+- **Pick your Klaudia**: who she is in this video — buttons from kit/roles.json (labels only; 'Other' lets them type a job). Then, only if they want, a look from kit/looks.json instead of the role's own clothes. She is always herself: never offer to change her face, hair or body.
 
 ## 4. The lyric and the song — choice 4 (skill klaudia-song)
 Write the lyric with kit/lyrics-template.md and show it. Buttons: **Make the song (2 takes, about 10 Suno credits)** / Change something.

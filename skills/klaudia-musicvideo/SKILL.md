@@ -12,7 +12,7 @@ Folder: /workspace/klaudia-videos/<YYYY-MM-DD>-<name>/.
 
 1. **The start** — buttons: **I have an idea** / **Pitch me three** / **I have my own lyric** / **I have my own song file**.
 2. **The concept — choice 1**: three pitches (the template's shape). Buttons.
-3. **Sound and look — choices 2 and 3**: the sound menu (kit/sounds.json; for a music video any world from the past can fit, not only the news ones) or their own song; her look for the world.
+3. **Sound and look — choices 2 and 3**: the sound menu (kit/sounds.json; for a music video any world from the past can fit, not only the news ones) or their own song; Pick your Klaudia (kit/roles.json) for the world, or a look from kit/looks.json.
 4. **The song — choice 4**:
    - We write it: the lyric (the template), shown; the yes for each Suno round (about 10 credits, 2 takes; ask "about 2:30" as duration); skill klaudia-song; pick by ear.
    - Their own lyric: same, with their words (check the rules).

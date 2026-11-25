@@ -10,7 +10,7 @@ Klaudia's reference images: /workspace/klaudia-bot/refs/klaudia-face.jpg and kla
 ## A still (9:16, vertical)
 **With OPENROUTER_API_KEY set (always for a sung video):** make the stills of HER with /workspace/klaudia-bot/bin/klaudia_photo.py (Nano Banana Pro, about $0.14 each, one at a time; stop and say so if one costs over $0.20), with the two Klaudia images as --refs; once one is right, make the others as edits of it. Stills without her (the robots, a place) can stay on Grok Imagine. Show the price of the batch first and wait for the yes.
 **Without the key:** your own Grok Imagine, as below.
-Prompt, in this order, one paragraph: identity (kit/klaudia.json "identity") · the look's text · the shot (framing, what she does, her expression: deadpan, eyes open) · the place in one line · photo_end.
+Prompt, in this order, one paragraph: identity (kit/klaudia.json "identity") · the chosen role's text (kit/roles.json) or the look's text · the shot (framing, what she does, her expression: deadpan, eyes open) · the place in one line · photo_end.
 References: the two Klaudia images (plus the robots image when they are in the shot). Never a photo of a real person; never a photo from the internet.
 Save as photos/NN-name.png. When one photo of her comes out right, make the next ones as edits of THAT photo when the place is the same (it keeps her face).
 

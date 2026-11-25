@@ -1,0 +1,16 @@
+{
+  "_how": "Pick your Klaudia: who she is in THIS video. She is always herself (her face, her body, her very long black hair with one orange streak); the role changes her clothes, her props and her place. Show the labels as buttons (6 at a time, plus 'Other' where the person types a job). Paste the role's text after her identity in every still of her, INSTEAD of the look's text (a role brings its own clothes). Never a role that is sexual, a real person, a uniform of a real army or police, a religious figure, a politician, or anything that mocks a group.",
+  "roles": [
+    {"id": "anchor", "label": "🎙 News anchor", "text": "She is a TV news anchor: a sharp white blouse with puffed sleeves and a black corset, sitting at a retro news desk with a microphone, studio lights behind her."},
+    {"id": "athlete", "label": "🏃 Athlete", "text": "She is a professional athlete: a white and orange sports kit, white sneakers, a race number pinned on, a stadium track at sunrise around her."},
+    {"id": "architect", "label": "📐 Architect", "text": "She is an architect: a tailored black trouser suit, a white hard hat under her arm, rolled blueprints, a building site of glass and concrete behind her."},
+    {"id": "astronaut", "label": "🚀 Astronaut", "text": "She is an astronaut: a white spacesuit with orange stripes, helmet held in one hand (her face and hair fully visible), a launch pad at dusk behind her."},
+    {"id": "singer50s", "label": "🎤 1950s singer", "text": "She is a 1950s lounge singer: a fitted black satin gown, white gloves, an old chrome microphone on a stand, a red velvet curtain behind her."},
+    {"id": "ceo", "label": "💼 CEO", "text": "She is a CEO: a sharp white suit, orange silk shirt, a glass boardroom high above the city, a tablet in her hand."},
+    {"id": "chef", "label": "👩‍🍳 Chef", "text": "She is a chef: a white chef's jacket with orange piping, no hat (her hair loose), a busy steel restaurant kitchen behind her, a pan in her hand."},
+    {"id": "scientist", "label": "🧪 Scientist", "text": "She is a scientist: a white lab coat over a black turtleneck, safety glasses pushed up on her head, a bright lab with glowing flasks behind her."},
+    {"id": "dj", "label": "🎧 DJ", "text": "She is a club DJ: a silver jacket, big white headphones around her neck, hands on the decks, a dark Berlin warehouse with orange lights behind her."},
+    {"id": "detective", "label": "🕵️ Detective", "text": "She is a film-noir detective: a long cream trench coat, a black fedora held in her hand, a rainy neon street at night behind her."},
+    {"id": "fit", "label": "🎲 Whatever fits the story", "text": "Choose the role that fits the story best (a job or a character, never one of the forbidden ones above) and say which."}
+  ]
+}
