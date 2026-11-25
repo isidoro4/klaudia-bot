@@ -9,12 +9,13 @@ Never a first frame: with a first frame OpenRouter ignores the audio.
      python3 klaudia_sing.py window --vocals song/vocals.mp3 --lines song/lines.json --from 13.7 --to 17.4 --out sing/S04.wav
        (--lines: the JSON klaudia_edit.py --dump-lines writes; the window opens 0.7 s before the first word and is
         cut to whole seconds, 4–15; everything outside [from, to] is silenced)
-  2. host     publish the folder of windows on a temporary https link (free; Cloudflare quick tunnel)
-     python3 klaudia_sing.py host --dir sing          → prints {"url": "https://….trycloudflare.com"} and keeps running
+  2. host     give each window an https link (free): a Cloudflare quick tunnel over http2, or, where the tunnel is
+     blocked, a temporary upload that deletes itself within an hour (litterbox, tmpfiles.org)
+     python3 klaudia_sing.py host --dir sing [--mode auto|tunnel|temp]   → prints {"mode", "urls": {"01.wav": "https://…"}}
   3. price    what one take costs (free)
      python3 klaudia_sing.py price --seconds 5 --model mini --res 720p
   4. sing     make the take (PAID: needs --yes, and the person's yes in the chat first)
-     python3 klaudia_sing.py sing --still photos/04.png --face refs/klaudia-face.jpg --audio-url https://…/S04.wav \
+     python3 klaudia_sing.py sing --still photos/04.png --face refs/klaudia-face.jpg --audio-url <the url host printed for that file> \
         --words "X wants to pay the streamers" --seconds 5 --model mini --res 720p --format vertical --out clips/S04-sung.mp4 --yes
      It prints {"ok", "out", "cost", "lead": 0.7}. In the edit, give that clip as clips/S04-sung.mp4@0.7 so the take's
      first word lands on the song's word.
@@ -82,33 +83,85 @@ def cmd_window(a):
 # ---------- 2. the temporary https link ----------
 def cloudflared():
     exe = shutil.which("cloudflared") or str(Path.home() / ".local/bin/cloudflared")
-    if Path(exe).is_file():
-        return exe
-    sys.exit("No cloudflared: run the klaudia-setup step that installs it.")
+    return exe if Path(exe).is_file() else None
 
 
-def cmd_host(a):
-    d = Path(a.dir).resolve()
-    port = a.port
+def url_ok(url):
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, method="GET", headers={"Range": "bytes=0-15"}), timeout=20) as r:
+            return r.status in (200, 206)
+    except Exception:
+        return False
+
+
+def upload_temp(path):
+    """A temporary public copy (litterbox: deleted after 1 hour; tmpfiles.org as a fallback). Returns a direct URL."""
+    for cmd, fix in (
+        (["curl", "-s", "-m", "90", "--form-string", "reqtype=fileupload", "--form-string", "time=1h",
+          "-F", f"fileToUpload=@{path}", "https://litterbox.catbox.moe/resources/internals/api.php"], lambda s: s.strip()),
+        (["curl", "-s", "-m", "90", "-F", f"file=@{path}", "https://tmpfiles.org/api/v1/upload"],
+         lambda s: json.loads(s)["data"]["url"].replace("https://tmpfiles.org/", "https://tmpfiles.org/dl/", 1)),
+    ):
+        for _ in range(2):
+            try:
+                out = subprocess.run(cmd, capture_output=True, text=True).stdout
+                url = fix(out)
+                if url.startswith("https://") and url_ok(url):
+                    return url
+            except Exception:
+                pass
+    return None
+
+
+def try_tunnel(d, port):
+    exe = cloudflared()
+    if not exe:
+        return None, None, None
     web = subprocess.Popen([sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1", "--directory", str(d)],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    tun = subprocess.Popen([cloudflared(), "tunnel", "--no-autoupdate", "--url", f"http://127.0.0.1:{port}"],
+    # http2 = plain HTTPS on port 443; the default (QUIC over UDP) is blocked on many cloud computers
+    tun = subprocess.Popen([exe, "tunnel", "--no-autoupdate", "--protocol", "http2", "--url", f"http://127.0.0.1:{port}"],
                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    url = None
-    t_end = time.time() + 60
+    url, t_end = None, time.time() + 45
     while time.time() < t_end and url is None:
         line = tun.stdout.readline()
         if "trycloudflare.com" in line:
             url = "https://" + line.split("https://", 1)[1].split()[0].strip("|").strip()
-    if not url:
-        web.kill()
-        tun.kill()
-        sys.exit("The tunnel did not start in 60 s.")
-    print(json.dumps({"ok": True, "url": url, "dir": str(d), "note": "keep this running until every take is done"}), flush=True)
-    try:
-        tun.wait()
-    finally:
-        web.kill()
+    return url, web, tun
+
+
+def cmd_host(a):
+    """Give every .wav in --dir an https link. --mode auto: the tunnel first (nothing leaves except through it), then
+    a temporary upload. Prints {"ok", "mode", "urls": {file: url}}; with the tunnel it keeps running until stopped."""
+    d = Path(a.dir).resolve()
+    files = sorted(d.glob("*.wav"))
+    if not files:
+        sys.exit("No .wav files in " + str(d))
+    if a.mode in ("auto", "tunnel"):
+        url, web, tun = try_tunnel(d, a.port)
+        if url:
+            time.sleep(4)
+            if url_ok(f"{url}/{files[0].name}"):
+                print(json.dumps({"ok": True, "mode": "tunnel", "urls": {f.name: f"{url}/{f.name}" for f in files},
+                                  "note": "keep this running until every take is done"}), flush=True)
+                try:
+                    tun.wait()
+                finally:
+                    web.kill()
+                return
+        for pr in (web, tun):
+            if pr:
+                pr.kill()
+        if a.mode == "tunnel":
+            sys.exit("The tunnel did not work on this computer: use --mode temp.")
+    urls = {}
+    for f in files:
+        u = upload_temp(f)
+        if not u:
+            sys.exit(json.dumps({"ok": False, "failed": f.name, "urls": urls}))
+        urls[f.name] = u
+    print(json.dumps({"ok": True, "mode": "temp", "urls": urls,
+                      "note": "temporary public links (deleted within about an hour): only these few seconds of the vocal"}))
 
 
 # ---------- 4. the take ----------
@@ -201,6 +254,7 @@ def main():
     h = sub.add_parser("host")
     h.add_argument("--dir", required=True)
     h.add_argument("--port", type=int, default=8765)
+    h.add_argument("--mode", choices=["auto", "tunnel", "temp"], default="auto")
     for name in ("price", "sing"):
         s = sub.add_parser(name)
         s.add_argument("--seconds", type=int, default=5)

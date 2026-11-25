@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 (beta)
+- Lip sync fixed for Grok Bot's computer: the tunnel now runs over http2, and where it is still blocked each vocal snippet goes to a temporary host that deletes it within an hour (the bot says so first).
+- Singing shots default to the cheap Seedance mini, with the price per shot shown first.
+
 ## 0.3.0 (beta)
 - Pick your Klaudia: choose who she is in your video (news anchor, athlete, architect, astronaut, 1950s singer, CEO, chef, scientist, DJ, detective, or type a job). She is always herself; the role changes her clothes and her world.
 
