@@ -1,18 +1,16 @@
 ---
 name: klaudia-lipsync
-description: Use when a KLAUDIA video has shots where she sings on camera and OPENROUTER_API_KEY is set. Makes those shots on OpenRouter from the song's own vocal (HeyGen Avatar IV by default), so her lips match the song. Never without the person's yes to the price.
+description: Use when a KLAUDIA video has shots where she sings on camera and OPENROUTER_API_KEY is set. HeyGen Avatar IV animates the shot's still with her own vocal, in short takes, then the lip sync is measured. Never without the person's yes to the price.
 ---
 
-# Singing shots with real lip sync — HeyGen Avatar IV on OpenRouter
+# Singing shots — HeyGen Avatar IV on OpenRouter, short takes, measured
 
-The shot's still + the VOCAL of exactly that shot's lines (https link) → HeyGen animates the still so she sings it. $0.05 per second, the same OpenRouter key, no face reference needed (it animates whoever is in the still, so the still must be her). Script: /workspace/klaudia-bot/bin/klaudia_sing.py (its header explains every command). Seedance (`--model mini|flash|full`) only if the person asks for it: it refused Klaudia's face reference as "may be a real person"; without the face reference it may pass. From the video's folder:
+Why HeyGen: it accepts Klaudia's face (Seedance refuses it as "may be a real person"; dropping her reference to get through is FORBIDDEN: the face stops being hers). $0.05 a second.
 
-1. **The vocal stem** (once per song): Suno's stems tool on the chosen take, mode "two" (about 10 Suno credits: ask first, in the same yes as the song if you can). Download the vocals stem (if Suno asks for a download credit, ask) → song/vocals.mp3. Never make extra Suno songs to cut windows: the stems are the only Suno step here. Say once that the stems appear in their Suno library and can be deleted there.
-2. **The lines with their times**: `python3 /workspace/klaudia-bot/bin/klaudia_edit.py --song song/song.mp3 --words song/alignment.json --lyrics song/lyrics.txt --clips x --dump-lines song/lines.json`.
-3. **Which shots sing**: 3–5 at most per video, 4–8 s each, one or two lyric lines each, her face close or medium, mouth fully visible, nothing in front of it. The rest stay Grok Imagine clips where she moves (no singing to camera in those).
-4. **The windows** (free): for each singing shot, `python3 …/klaudia_sing.py window --vocals song/vocals.mp3 --from <first word t0> --to <last word t1> --out sing/<NN>.wav` (times from lines.json).
-5. **The price and the yes**: `python3 …/klaudia_sing.py price --seconds <s>` for each (HeyGen: $0.05 a second, about $0.25 per 5 s). Show the list and the total. ONE button: **Make the singing shots ($X)**, plus **Not now**. Don't offer models; Seedance only if they ask. Nothing is spent without that yes.
-6. **The links** (free): `python3 …/klaudia_sing.py host --dir sing` (background). It tries the tunnel (over http2) and, if this computer blocks it, uploads each window to a temporary host that deletes it within an hour. It prints `{"mode", "urls": {"01.wav": "https://…"}}`. If mode is "temp", tell the person in one line: "Your vocal snippets are on a temporary public link for up to an hour (only these few seconds)." With mode "tunnel", keep it running until the last take, then stop it.
-7. **The takes**, one by one: `python3 …/klaudia_sing.py sing --still photos/<NN>.png --audio-url <the url printed for <NN>.wav> --words "<the exact words>" --seconds <s> --format <vertical|horizontal> --out clips/<NN>-sung.mp4 --yes` (no --face: never send her face close-up as a reference). It prints the real cost. A refusal is final for that still: never edit the picture to get through; offer another still. A timeout: never submit again (it would charge twice); say so.
-8. **Check by eye** the first take before the rest: does she sing those words? If her lips drift, keep the part that matches (the edit can cut it shorter) or cut away to another shot. One retake at most per shot, with the person's yes.
-9. **The edit**: give each sung take as `clips/<NN>-sung.mp4@0.7` in klaudia-edit's --clips list, in its place in the story (0.7 s = the window's lead before the first word).
+1. **Her voice alone** (once per song): Suno's stems tool on the chosen take, mode "two" (about 10 credits: ask, ideally in the song's yes). Download the vocals → song/vocals.mp3. Say once that stems appear in their Suno library and can be deleted there.
+2. **Sung shots**: 2–4 per video, each 2–5 s, ONLY her own words (never the choir's lines), her face close or medium, mouth visible, made from a still made with `--sing` (klaudia-shots).
+3. **Windows** (free): `klaudia_board.py windows board.json --vocals song/vocals.mp3` → sing/NN.wav + sing/NN.json (song_start). A window over 5 s is refused with where to split.
+4. **Price + yes**: inside the board's one yes (klaudia-board step 4). The balance is checked before anything is sent.
+5. **Takes**: `klaudia_board.py takes board.json --yes` (all in parallel; each window goes to a temporary link deleted within an hour: say so once). One by one if needed: `klaudia_sing.py sing --still photos/NN.png --audio sing/NN.wav --format vertical --out clips/NN-sung.mp4 --yes`. A refusal is final for that still (offer another still). A timeout: `klaudia_sing.py fetch --out clips/NN-sung.mp4` later — never submit again (it would charge twice). 402 "weight": make the window shorter.
+6. **The check** (free, automatic in `takes`): `klaudia_sync.py check clips/NN-sung.mp4` → good · shift (the edit moves it) · drift (cut at good_until) · bad. Look at the first take yourself too. One retake at most per shot, with a new yes.
+7. **The edit** places them by the song's clock (.sync.json): never add "@0.7".

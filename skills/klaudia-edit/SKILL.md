@@ -1,22 +1,16 @@
 ---
 name: klaudia-edit
-description: Use when klaudia-news has the song and the clips, or the person asks to edit or re-edit a KLAUDIA'S NEWS video. Builds the vertical video with the lyrics on screen, on this computer, for free.
+description: Use when a KLAUDIA video has its song and its clips or photos, or the person asks to edit or re-edit a video. Builds the video (vertical and 16:9) with the lyrics, graphics, colour and frame, on this computer, for free.
 ---
 
 # The edit — /workspace/klaudia-bot/bin/klaudia_edit.py
 
-From the video's folder:
-```
-python3 /workspace/klaudia-bot/bin/klaudia_edit.py \
-  --song song/song.mp3 --words song/alignment.json --lyrics song/lyrics.txt \
-  --clips clips/01-*.mp4 clips/02-*.mp4 ... (in story order; a photo instead of a clip is fine) \
-  --title "<2–4 words: the news>" --tag "<THE ___ YOURSELF. sign-off>" \
-  --out <short-name>.mp4
-```
-- Give one --clips entry per shot (dump the lines first to count them). A sung take: `clips/NN-sung.mp4@0.7`; when it covers the next line too, put `+` for that line so the take keeps playing.
-- One shot per lyric line, cut where each line starts; the clips repeat if there are fewer clips than lines, so give them in the order the story needs.
-- `--test 0-10` makes only those seconds, fast: use it first if anything looks off.
-- `--end 38` cuts the song there if the take runs long after the last line.
-- It prints {"ok": true, "out": …}. Send the file in the chat (big file: a link from their Drive if connected).
-- Fails with "No ffmpeg": run skill klaudia-setup step 1 again.
-Check before sending: watch the first 5 seconds (her face, the hook words on screen) and the end card. The end card always says "fan-made with KLAUDIA BOT · made with AI": never remove it.
+From the video's folder, always from the board: `python3 /workspace/klaudia-bot/bin/klaudia_edit.py --board board.json --out <short-name>.mp4 --also`
+- `--also` makes the other shape too (<name>-16x9.mp4). `--test 0-12` makes only that stretch, fast: use it first if anything looks off.
+- The board's "style" decides the frame (news / clip / ad), the words (classic / karaoke / giant / box) and the colour (kit/grades.json). Flags override it: `--look`, `--lyrics-style`, `--grade`.
+- Sung takes are placed by the song's clock (their .sync.json): never "@0.7" by hand.
+- Style frames (pictures of the finished look, free): `--frames 3.2,11,20 --out frames.png`.
+- It prints {"ok": true, …}; "lines_timed_by_guess" lists lines Suno did not align: watch those seconds.
+- Send the file in the chat (big: a Drive link if connected). Before sending, look at the first 5 seconds (her face, the hook words) and the end card ("fan-made with KLAUDIA BOT · made with AI": never removed).
+- No board (an old video): `--song song/song.mp3 --words song/alignment.json --lyrics song/lyrics.txt --clips … --title … --tag …` still works (one shot per line).
+- "No ffmpeg": run skill klaudia-setup step 1 again.

@@ -1,12 +1,21 @@
 {
   "name": "Klaudia",
   "who": "KLAUDIA (with a K) is a deadpan AI pop star and news presenter: 'dystopian dissident slopcore girl. she hired herself.' She says the craziest things with a straight face, never asks permission, laughs at herself, and always wins in the end: the joke is the world, never her. Sign-off: '___ yourself.' (Invite yourself. Stream yourself. Hire yourself.)",
-  "refs": ["refs/klaudia-face.jpg", "refs/klaudia-sheet.jpg"],
+  "face_sheet": "refs/klaudia-sheet.jpg",
+  "face_close": "refs/klaudia-face.jpg",
+  "refs": ["refs/klaudia-sheet.jpg", "refs/klaudia-face.jpg"],
   "robots_ref": "refs/rb1-robots.jpg",
-  "identity": "Klaudia, the woman of the reference images: exactly her face from the close-up reference, straight heavy black fringe, very long loose straight black hair (below the waist) with one orange streak, orange lips, black winged eyeliner, light freckles. No star hair clip, no headset microphone, no device on her head.",
+  "ref_roles": {
+    "face_sheet": "Klaudia's face sheet: WHO she is. Copy her face, her straight heavy black fringe, her very long black hair and her one orange streak exactly, in every view",
+    "outfit": "her clothes for this video: copy the clothes only, never the face, the pose or the background of this image",
+    "style": "the style frame: copy only its light, colour, lens and grain, never the person or the place",
+    "face_close": "a close-up of the same woman (Klaudia), for the detail of her face only"
+  },
+  "identity": "Klaudia, the woman of the reference images: exactly her face from the face sheet, straight heavy black fringe, very long loose straight black hair (below the waist) with one orange streak, orange lips, black winged eyeliner, light freckles, a grown woman. No star hair clip, no headset microphone, no device on her head.",
+  "sing_still": "She faces the camera, chin up, eyes wide open looking into the lens, her whole mouth clearly visible with nothing in front of it (no hand, no microphone, no hair), lips gently closed, a neutral calm face, ready to sing.",
   "photo_end": "Real photograph, 35mm, real skin with visible pores, no retouching. The picture fills the whole frame edge to edge. No text, no letters, no numbers, no logos, no brand names, no app interfaces anywhere: screens show only soft abstract colour.",
   "singing": "eyes wide open the whole time, chin up, looking straight into the camera; never eyes closed, never looking down",
   "robots": "two chrome robots with smooth chrome dome heads with a dark visor band and black bow ties, chrome hands only, no human skin, no face inside the domes (her backing singers)",
-  "always_herself": "Her face, her body and her very long black hair with one orange streak never change; only her role, clothes and place do.",
-  "never": ["a different face or a short bob (that is another character)", "a real person's face", "nudity or anything sexual", "a child or anyone who looks under age"]
+  "always_herself": "Her face and her very long black hair with one orange streak never change. Her body (kit/bodies.json), her role, clothes and place can.",
+  "never": ["a different face or a short bob (that is another character)", "a real person's face", "nudity or anything sexual", "a child or anyone who looks under age", "a still of her made without her face sheet"]
 }

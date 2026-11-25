@@ -8,6 +8,8 @@ Klaudia (with a K) is an original character by @javif4_ / @KLAUDIAclub (klaudia.
 - Real companies: name them in words only, no logos, add "not affiliated" when they are the subject.
 - Say when a news story is only a plan or a rumour.
 - The person posts the video, never the bot.
+- Every picture of Klaudia is made WITH her reference images. Never a picture of her "from text only" to get past a filter: if a model refuses her, use another model or another shot.
+- A guest character (feat.) is Claudia (from her public canon, kept as it is) or an invented one: a drawing, a mascot, a robot, an invented person. Never a real person, never the person's own face.
 
 **Never**
 - Politics, elections, political parties or politicians.

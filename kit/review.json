@@ -1,0 +1,20 @@
+{
+  "_how": "The fixed list every still passes BEFORE the person sees it (klaudia_photo.py review). Free checks first (size, one face, face size for sung shots), then, with the key, a vision model answers this list. A still that fails: make it once more (inside the same yes); if it fails again, show it with the reason and let the person choose.",
+  "checks": [
+    "exactly one woman unless the shot asks for more people",
+    "her face is the same woman as the reference sheet (same face shape, eyes, nose, lips)",
+    "straight heavy black fringe and very long straight black hair with ONE orange streak",
+    "orange lips and black winged eyeliner",
+    "a grown woman (never looks under age)",
+    "no letters, words, numbers or logos anywhere in the picture",
+    "the framing asked for (close-up, medium, wide)",
+    "the action asked for",
+    "hands with five fingers, nothing melted or doubled",
+    "no star hair clip, no headset microphone"
+  ],
+  "sing_checks": [
+    "she faces the camera with her whole mouth visible (no hand, hair or object in front of it)",
+    "lips closed or nearly closed, a calm neutral face",
+    "her face is big enough: close-up or medium close-up"
+  ]
+}

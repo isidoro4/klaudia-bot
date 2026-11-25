@@ -1,0 +1,9 @@
+{
+  "_how": "How the words appear (klaudia_edit.py --lyrics-style, or the board's style.lyrics). The person picks from sheets/words.jpg by number. The choir's shouts are always big and orange in the middle.",
+  "styles": [
+    {"id": "classic", "label": "Big subtitles"},
+    {"id": "karaoke", "label": "Karaoke (word in orange)"},
+    {"id": "giant", "label": "One giant word"},
+    {"id": "box", "label": "Post caption"}
+  ]
+}

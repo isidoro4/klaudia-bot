@@ -1,0 +1,9 @@
+{
+  "_how": "WHICH KLAUDIA? The person picks her body from sheets/bodies.png by number (1, 2, 3) or keeps her reference ('as she is'). Same face, same streak: only the body changes. Paste the text after her identity in every still. Labels are neutral: it is a game of the brand, never a joke about bodies.",
+  "bodies": [
+    {"id": "ref", "label": "As in her references (default)", "text": ""},
+    {"id": "slim", "label": "1", "text": "Her body: slim, with a slender build."},
+    {"id": "curvy", "label": "2", "text": "Her body: soft and curvy, a medium build with a full waist."},
+    {"id": "full", "label": "3", "text": "Her body: full-figured and plus-size, broad and soft."}
+  ]
+}

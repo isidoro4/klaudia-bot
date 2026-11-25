@@ -1,0 +1,19 @@
+{
+  "_how": "One graphic per shot at most, only where it says something: an OBJECT of the story's world that explains the line (the joke is in the object). Draw it in code (klaudia_graphics.py), never ask an image model for letters. Pick the type from what the line says. Words on it: 1–4 per row, true to the news, in CAPITALS; never a real logo, a coin, a price tip or a call to buy.",
+  "by_format": {
+    "news": "TV news: headline, alert, counter, meter, chart, clock. The frame adds the KLAUDIA'S NEWS bug, LIVE and the BREAKING band.",
+    "clip": "music video: few graphics (2–3 in a whole video): stamp, tag, ticket as props of her world.",
+    "ad": "unpaid ad: tag (price), ticket (what you get), stamp (UNPAID), meter (satisfaction 100%)."
+  },
+  "pick": [
+    {"line_is": "a number, an audience, a count", "type": "counter", "example": {"type": "counter", "label": "LIVE VIEWERS", "from": 0, "to": 4}},
+    {"line_is": "a chance, a level, a percentage", "type": "meter", "example": {"type": "meter", "label": "CHANCE OF SNOW", "from": 0, "to": 100, "unit": "%"}},
+    {"line_is": "a list of things, what something costs or contains", "type": "ticket", "example": {"type": "ticket", "title": "PROTEIN BAR · AISLE 4", "rows": [["PROTEIN", "30 G"], ["FLAVOUR", "PROMPT"]], "total": ["TOTAL", "GAINS"]}},
+    {"line_is": "a price, a value, 'free', 'unpaid'", "type": "tag", "example": {"type": "tag", "label": "PRICE", "text": "$0.00"}},
+    {"line_is": "a verdict, an approval, a rejection", "type": "stamp", "example": {"type": "stamp", "text": "APPROVED"}},
+    {"line_is": "a deadline, a date, 'tonight', 'soon'", "type": "clock", "example": {"type": "clock", "time": "23:59", "label": "DEADLINE"}},
+    {"line_is": "growth, a trend, 'more and more'", "type": "chart", "example": {"type": "chart", "label": "AI GIRLS WITH A BOT", "values": [0, 0, 1, 2, 9]}},
+    {"line_is": "the news arriving, a message, a notification", "type": "alert", "example": {"type": "alert", "app": "Klaudia's News", "text": "X will pay streamers."}},
+    {"line_is": "the story in three words", "type": "headline", "example": {"type": "headline", "kicker": "KLAUDIA'S NEWS", "text": "NOBODY INVITED HER"}}
+  ]
+}

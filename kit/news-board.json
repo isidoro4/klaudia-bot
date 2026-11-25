@@ -1,0 +1,12 @@
+{
+  "_how": "Klaudia's News has a FIXED board: seven shots on the four parts of the lyric (intro · verse · chorus · outro), so the person only approves it. klaudia_board.py plan --template news fills the seconds from the song. Fill each 'graphic' with an object that EXPLAINS that part's fact (kit/graphics.json): numbers → counter or meter, money or a list → ticket or tag, a deadline → clock, growth → chart, the news itself → alert or headline. Sung shots: close or medium, face to camera, mouth fully visible.",
+  "shots": [
+    {"kind": "sing",  "what": "close-up, she sings the hook to camera, deadpan", "graphic": null},
+    {"kind": "move",  "what": "medium, she acts fact 1 (points, reads a phone, shrugs)", "graphic": {"type": "headline", "kicker": "KLAUDIA'S NEWS", "text": "<the news in 3 words>"}},
+    {"kind": "dance", "what": "wide, she and the robots dance on the beat (the choir shouts)", "graphic": null},
+    {"kind": "move",  "what": "medium close, she reacts to fact 2 with a straight face", "graphic": {"type": "counter", "label": "<what is counted>", "from": 0, "to": 100}},
+    {"kind": "sing",  "what": "medium close-up, she sings the chorus to camera", "graphic": null},
+    {"kind": "dance", "what": "wide, low angle, full dance with the robots", "graphic": null},
+    {"kind": "sing",  "what": "close-up, the punchline, dry, she wins", "graphic": {"type": "stamp", "text": "<1–2 words: her verdict>"}}
+  ]
+}
