@@ -8,14 +8,34 @@
    "ref": "refs/outfits/news.jpg"
   },
   {
-   "id": "latex",
-   "label": "🤍 White latex catsuit",
-   "text": "She wears a glossy white latex catsuit with thin orange piping and a high collar, white gloves and white boots; no dress, no black clothes."
+   "id": "street",
+   "label": "🧢 Streetwear",
+   "text": "She wears an oversized white hoodie with one orange stripe, wide black cargo trousers and chunky white sneakers."
+  },
+  {
+   "id": "rock",
+   "label": "🎸 Rock",
+   "text": "She wears a black leather biker jacket over a plain white t-shirt, black skinny jeans, a silver chain belt and black boots."
+  },
+  {
+   "id": "mod60s",
+   "label": "🕺 1960s mod",
+   "text": "She wears a white 1960s mod mini dress with bold orange geometric trim and white go-go boots."
+  },
+  {
+   "id": "sport",
+   "label": "🏃 Tracksuit",
+   "text": "She wears a black and orange tracksuit, the zip jacket open over a plain white crop top, and white sneakers."
   },
   {
    "id": "gala",
    "label": "🖤 Dark gala dress",
    "text": "She wears an elegant floor-length dark evening gown, simple and fitted, with small orange earrings."
+  },
+  {
+   "id": "latex",
+   "label": "🤍 White latex catsuit",
+   "text": "She wears a glossy white latex catsuit with thin orange piping and a high collar, white gloves and white boots; no dress, no black clothes."
   },
   {
    "id": "green",
