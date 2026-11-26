@@ -5,7 +5,7 @@ description: Use when the person chooses how the video looks — colour, the wor
 
 # Style — pick by number
 
-Sheets kept in the kit (free): sheets/bodies.png (WHICH KLAUDIA?) · sheets/grades.jpg (THE COLOUR) · sheets/words.jpg (THE WORDS) · sheets/looks.jpg (THE FRAME) · sheets/graphics.jpg. Send the sheet, ask "Which one? (number)", buttons with the numbers + **🔄 more options** + **✍️ my own**. Write the answer into board.json "style" (look, lyrics, grade) or state.json (body, role, outfit).
+Sheets kept in the kit (free): sheets/bodies.png (WHICH KLAUDIA?) · sheets/grades.jpg (THE COLOUR) · sheets/words.jpg (THE WORDS) · sheets/looks.jpg (THE FRAME) · sheets/graphics.jpg · sheets/roles.jpg (WHO IS KLAUDIA TODAY? = kit/roles.json, numbers 1–10 in that order) · sheets/outfits.jpg (DRESS HER = kit/looks.json: 1 news · 2 latex · 3 gala · 4 green). Send the sheet, ask "Which one? (number)", buttons with the numbers + **🔄 more options** + **✍️ my own**. Write the answer into board.json "style" (look, lyrics, grade) or state.json (body, role, outfit).
 
 - **With her real photo** (better, still free): once the first still exists, remake the sheet on it: `klaudia_sheet.py grades --photo photos/01.png --out grades.png`, `… words --photo photos/01.png --line "<a line of the song>" --out words.png`, `… looks --photo photos/01.png --title "<title>" --out looks.png`.
 - **The body**: 1 · 2 · 3 or "as she is" (kit/bodies.json). Same face, same streak. A game of the brand, never a joke about bodies.

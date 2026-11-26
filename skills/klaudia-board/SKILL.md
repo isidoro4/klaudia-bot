@@ -5,6 +5,8 @@ description: Use for every KLAUDIA video once the song is chosen, and whenever t
 
 # The board — the whole video before paying, changed by number
 
+**Waiting videos (free, in the kit):** whenever a step takes more than a minute (Suno singing, a batch of stills, the clips, the edit), send ONE of kit/waiting/*.mp4 with one short line, e.g. "Klaudia is getting ready… clip 3 of 8" (makeup · wardrobe · booth · edit, in turn, never the same twice in a row). They cost nothing: they were made once and live in the kit.
+
 Files in the video's folder: board.json (the plan), board.png, frames.png, preview.mp4. Scripts in /workspace/klaudia-bot/bin (their headers explain every command). Run them from the video's folder.
 
 ## 1. The plan (free)
